@@ -3,17 +3,17 @@ import copy
 import os
 
 
-def prepare_vm(vm_name, label, snapshot, username, password, path=""):
+def prepare_vm(vm_name, label, snapshot, username, password, path=None):
     vm = None
 
     if vm_name == "virtualbox":
         if not path:
             path = "C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe"
-        vm = VirtualBox(path, label, snapshot, username=username, password=password)
+        vm = VirtualBox(path, label, snapshot, username, password)
     elif vm_name == "vmware":
         if not path:
             path = "C:\\Program Files (x86)\\VMware\\VMware Workstation\\vmrun.exe"
-        vm = VMWare(path, label, snapshot, username=username, password=password)
+        vm = VMWare(path, label, snapshot, username, password)
     else:
         return None
 
@@ -49,12 +49,6 @@ def execute(command):
 
 
 class VirtualMachine:
-    path = ""
-    mode = ""
-    label = ""
-    snapshot = ""
-    username = ""
-    password = ""
     # vm control
     start_cmd = []
     restore_cmd = []
@@ -160,7 +154,7 @@ class VirtualMachine:
 
 class VirtualBox(VirtualMachine):
     def __init__(self, path, label, snapshot, username, password):
-        super().__init__(path, label, snapshot, username=username, password=password)
+        super().__init__(path, label, snapshot, username, password)
         # vm control
         self.start_cmd = [self.path, "startvm", self.label, "--type", self.mode]
         self.stop_cmd = [self.path, "controlvm", self.label, "poweroff"]
@@ -223,7 +217,7 @@ class VirtualBox(VirtualMachine):
 
 class VMWare(VirtualMachine):
     def __init__(self, path, label, snapshot, username, password):
-        super().__init__(path, label, snapshot, username=username, password=password)
+        super().__init__(path, label, snapshot, username, password)
         # vm control
         self.start_cmd = [self.path, "start", self.label, self.mode]
         self.stop_cmd = [self.path, "stop", self.label, "hard"]
